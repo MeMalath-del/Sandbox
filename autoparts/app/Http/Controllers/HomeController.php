@@ -13,68 +13,60 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $banners = Banner::active()->position('home_slider')->orderBy('sort_order')->get();
-        
-        $featuredCategories = Category::active()
-            ->featured()
+        // Categories with product count
+        $categories = Category::active()
             ->parents()
-            ->orderBy('sort_order')
-            ->limit(8)
-            ->get();
-        
-        $featuredBrands = Brand::active()
-            ->featured()
+            ->withCount('products')
             ->orderBy('sort_order')
             ->limit(12)
             ->get();
         
-        $featuredProducts = Product::active()
-            ->inStock()
-            ->featured()
-            ->with(['store', 'primaryImage'])
-            ->latest()
-            ->limit(8)
+        // Brands
+        $brands = Brand::active()
+            ->withCount('products')
+            ->orderByDesc('products_count')
+            ->limit(12)
             ->get();
         
+        // Sale products
+        $saleProducts = Product::active()
+            ->inStock()
+            ->onSale()
+            ->with(['store', 'primaryImage', 'category'])
+            ->latest()
+            ->limit(10)
+            ->get();
+        
+        // Bestseller products
         $bestsellerProducts = Product::active()
             ->inStock()
-            ->bestseller()
-            ->with(['store', 'primaryImage'])
+            ->with(['store', 'primaryImage', 'category'])
             ->orderByDesc('sales_count')
             ->limit(8)
             ->get();
         
-        $newArrivals = Product::active()
+        // New arrivals
+        $newProducts = Product::active()
             ->inStock()
-            ->newArrival()
-            ->with(['store', 'primaryImage'])
+            ->with(['store', 'primaryImage', 'category'])
             ->latest()
             ->limit(8)
             ->get();
         
-        $onSaleProducts = Product::active()
-            ->inStock()
-            ->onSale()
-            ->with(['store', 'primaryImage'])
-            ->latest()
-            ->limit(8)
-            ->get();
-        
-        $topStores = Store::active()
-            ->verified()
+        // Featured stores
+        $stores = Store::active()
+            ->withCount('products')
             ->orderByDesc('rating')
-            ->limit(6)
+            ->limit(4)
             ->get();
         
         return view('home', compact(
-            'banners',
-            'featuredCategories',
-            'featuredBrands',
-            'featuredProducts',
+            'categories',
+            'brands',
+            'saleProducts',
             'bestsellerProducts',
-            'newArrivals',
-            'onSaleProducts',
-            'topStores'
+            'newProducts',
+            'stores'
         ));
     }
 }
