@@ -4,25 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Answer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
-        'question_id',
-        'user_id',
-        'answer',
-        'is_store_answer',
-        'is_accepted',
-        'helpful_count',
-        'status',
+        'question_id', 'user_id', 'answer', 'is_store_answer', 'status', 'helpful_count',
     ];
 
     protected $casts = [
         'is_store_answer' => 'boolean',
-        'is_accepted' => 'boolean',
     ];
 
     public function question()

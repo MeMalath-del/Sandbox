@@ -9,13 +9,10 @@ class ProductView extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'product_id',
-        'user_id',
-        'session_id',
-        'ip_address',
-        'user_agent',
-        'referrer',
+    protected $fillable = ['product_id', 'user_id', 'ip_address', 'viewed_at'];
+
+    protected $casts = [
+        'viewed_at' => 'datetime',
     ];
 
     public function product()
@@ -26,17 +23,5 @@ class ProductView extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public static function record(Product $product)
-    {
-        return static::create([
-            'product_id' => $product->id,
-            'user_id' => auth()->id(),
-            'session_id' => session()->getId(),
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'referrer' => request()->header('referer'),
-        ]);
     }
 }

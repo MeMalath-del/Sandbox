@@ -12,28 +12,13 @@ class CustomNotification extends Model
     protected $table = 'custom_notifications';
 
     protected $fillable = [
-        'user_id',
-        'type',
-        'title',
-        'body',
-        'icon',
-        'image',
-        'action_url',
-        'data',
-        'is_read',
-        'read_at',
-        'is_push_sent',
-        'is_email_sent',
-        'is_sms_sent',
+        'user_id', 'type', 'title', 'message', 'data', 'action_url',
+        'icon', 'read_at',
     ];
 
     protected $casts = [
         'data' => 'array',
-        'is_read' => 'boolean',
         'read_at' => 'datetime',
-        'is_push_sent' => 'boolean',
-        'is_email_sent' => 'boolean',
-        'is_sms_sent' => 'boolean',
     ];
 
     public function user()
@@ -43,33 +28,37 @@ class CustomNotification extends Model
 
     public function markAsRead()
     {
-        if (!$this->is_read) {
-            $this->update([
-                'is_read' => true,
-                'read_at' => now(),
-            ]);
-        }
+        $this->update(['read_at' => now()]);
     }
 
     public function scopeUnread($query)
     {
-        return $query->where('is_read', false);
+        return $query->whereNull('read_at');
     }
 
-    public function scopeOfType($query, $type)
-    {
-        return $query->where('type', $type);
-    }
-
-    public static function send(User $user, $type, $title, $body, $data = [], $actionUrl = null)
+    public static function send($userId, $type, $title, $message, $data = [], $actionUrl = null)
     {
         return static::create([
-            'user_id' => $user->id,
+            'user_id' => $userId,
             'type' => $type,
             'title' => $title,
-            'body' => $body,
+            'message' => $message,
             'data' => $data,
             'action_url' => $actionUrl,
+            'icon' => static::getIconForType($type),
         ]);
+    }
+
+    protected static function getIconForType($type)
+    {
+        return match($type) {
+            'order' => 'bi-bag-check',
+            'payment' => 'bi-credit-card',
+            'delivery' => 'bi-truck',
+            'review' => 'bi-star',
+            'promotion' => 'bi-gift',
+            'system' => 'bi-bell',
+            default => 'bi-bell',
+        };
     }
 }

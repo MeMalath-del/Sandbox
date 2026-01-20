@@ -10,16 +10,7 @@ class ProductCompatibility extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
-        'car_make_id',
-        'car_model_id',
-        'car_year_id',
-        'year_from',
-        'year_to',
-        'engine_type',
-        'engine_code',
-        'transmission',
-        'notes',
+        'product_id', 'car_make_id', 'car_model_id', 'year_from', 'year_to', 'notes',
     ];
 
     public function product()
@@ -27,39 +18,27 @@ class ProductCompatibility extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function carMake()
+    public function make()
     {
-        return $this->belongsTo(CarMake::class);
+        return $this->belongsTo(CarMake::class, 'car_make_id');
     }
 
-    public function carModel()
+    public function model()
     {
-        return $this->belongsTo(CarModel::class);
+        return $this->belongsTo(CarModel::class, 'car_model_id');
     }
 
-    public function carYear()
+    public function getYearRangeAttribute()
     {
-        return $this->belongsTo(CarYear::class);
-    }
-
-    public function getDisplayNameAttribute()
-    {
-        $parts = [];
-        
-        if ($this->carMake) {
-            $parts[] = $this->carMake->name;
-        }
-        
-        if ($this->carModel) {
-            $parts[] = $this->carModel->name;
-        }
-        
         if ($this->year_from && $this->year_to) {
-            $parts[] = "({$this->year_from}-{$this->year_to})";
-        } elseif ($this->carYear) {
-            $parts[] = "({$this->carYear->year})";
+            return $this->year_from . ' - ' . $this->year_to;
         }
-        
-        return implode(' ', $parts);
+        if ($this->year_from) {
+            return $this->year_from . ' وما بعد';
+        }
+        if ($this->year_to) {
+            return 'حتى ' . $this->year_to;
+        }
+        return 'جميع السنوات';
     }
 }

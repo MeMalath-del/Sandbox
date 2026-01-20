@@ -10,31 +10,16 @@ class ReturnItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'return_id',
-        'order_item_id',
-        'product_id',
-        'quantity',
-        'refund_amount',
-        'condition',
-        'notes',
+        'return_id', 'order_item_id', 'quantity', 'reason', 'amount',
     ];
 
-    protected $casts = [
-        'refund_amount' => 'decimal:2',
-    ];
-
-    public function return()
+    public function returnRequest()
     {
-        return $this->belongsTo(ProductReturn::class, 'return_id');
+        return $this->belongsTo(ReturnRequest::class, 'return_id');
     }
 
     public function orderItem()
     {
         return $this->belongsTo(OrderItem::class);
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
     }
 }

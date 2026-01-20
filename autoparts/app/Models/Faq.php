@@ -10,38 +10,21 @@ class Faq extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category',
-        'question',
-        'question_en',
-        'answer',
-        'answer_en',
-        'is_active',
-        'sort_order',
-        'views_count',
-        'helpful_count',
+        'category_id', 'question', 'answer', 'sort_order', 'is_active',
+        'helpful_count', 'not_helpful_count',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
 
-    public function incrementViews()
+    public function category()
     {
-        $this->increment('views_count');
-    }
-
-    public function markHelpful()
-    {
-        $this->increment('helpful_count');
+        return $this->belongsTo(FaqCategory::class, 'category_id');
     }
 
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    public function scopeOfCategory($query, $category)
-    {
-        return $query->where('category', $category);
     }
 }

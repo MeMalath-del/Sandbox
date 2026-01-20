@@ -10,26 +10,17 @@ class Report extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reporter_id',
-        'reportable_type',
-        'reportable_id',
-        'reason',
-        'description',
-        'evidence',
-        'status',
-        'resolution_notes',
-        'resolved_by',
-        'resolved_at',
+        'user_id', 'reportable_type', 'reportable_id', 'reason', 'category',
+        'status', 'resolved_at', 'resolved_by', 'resolution_note',
     ];
 
     protected $casts = [
-        'evidence' => 'array',
         'resolved_at' => 'datetime',
     ];
 
-    public function reporter()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'reporter_id');
+        return $this->belongsTo(User::class);
     }
 
     public function reportable()
@@ -37,29 +28,9 @@ class Report extends Model
         return $this->morphTo();
     }
 
-    public function resolver()
+    public function resolvedBy()
     {
         return $this->belongsTo(User::class, 'resolved_by');
-    }
-
-    public function resolve($notes, $userId)
-    {
-        $this->update([
-            'status' => 'resolved',
-            'resolution_notes' => $notes,
-            'resolved_by' => $userId,
-            'resolved_at' => now(),
-        ]);
-    }
-
-    public function dismiss($notes, $userId)
-    {
-        $this->update([
-            'status' => 'dismissed',
-            'resolution_notes' => $notes,
-            'resolved_by' => $userId,
-            'resolved_at' => now(),
-        ]);
     }
 
     public function scopePending($query)

@@ -10,70 +10,36 @@ class WalletTransaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'transaction_number',
-        'wallet_id',
-        'user_id',
-        'type',
-        'amount',
-        'fee',
-        'balance_before',
-        'balance_after',
-        'status',
-        'order_id',
-        'payment_id',
-        'related_user_id',
-        'description',
-        'notes',
+        'wallet_id', 'type', 'amount', 'description', 'reference',
+        'payment_method', 'status', 'metadata',
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
-        'fee' => 'decimal:2',
-        'balance_before' => 'decimal:2',
-        'balance_after' => 'decimal:2',
+        'metadata' => 'array',
     ];
-
-    public static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($transaction) {
-            $transaction->transaction_number = 'TXN-' . strtoupper(uniqid());
-        });
-    }
 
     public function wallet()
     {
         return $this->belongsTo(Wallet::class);
     }
 
-    public function user()
+    public function getTypeColorAttribute()
     {
-        return $this->belongsTo(User::class);
+        return match($this->type) {
+            'credit' => 'success',
+            'debit' => 'danger',
+            'withdrawal' => 'warning',
+            default => 'secondary',
+        };
     }
 
-    public function order()
+    public function getTypeIconAttribute()
     {
-        return $this->belongsTo(Order::class);
-    }
-
-    public function payment()
-    {
-        return $this->belongsTo(Payment::class);
-    }
-
-    public function relatedUser()
-    {
-        return $this->belongsTo(User::class, 'related_user_id');
-    }
-
-    public function isCredit()
-    {
-        return $this->amount > 0;
-    }
-
-    public function isDebit()
-    {
-        return $this->amount < 0;
+        return match($this->type) {
+            'credit' => 'bi-arrow-down-circle',
+            'debit' => 'bi-arrow-up-circle',
+            'withdrawal' => 'bi-bank',
+            default => 'bi-circle',
+        };
     }
 }

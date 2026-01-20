@@ -9,17 +9,10 @@ class TicketReply extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'ticket_id',
-        'user_id',
-        'message',
-        'attachments',
-        'is_internal',
-    ];
+    protected $fillable = ['ticket_id', 'user_id', 'message', 'is_staff'];
 
     protected $casts = [
-        'attachments' => 'array',
-        'is_internal' => 'boolean',
+        'is_staff' => 'boolean',
     ];
 
     public function ticket()
@@ -30,26 +23,5 @@ class TicketReply extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public static function boot()
-    {
-        parent::boot();
-
-        static::created(function ($reply) {
-            $ticket = $reply->ticket;
-            
-            // Update first response time if this is staff reply
-            if (!$ticket->first_response_at && $reply->user_id !== $ticket->user_id) {
-                $ticket->update(['first_response_at' => now()]);
-            }
-            
-            // Update ticket status
-            if ($reply->user_id === $ticket->user_id) {
-                $ticket->update(['status' => 'pending']);
-            } else {
-                $ticket->update(['status' => 'in_progress']);
-            }
-        });
     }
 }

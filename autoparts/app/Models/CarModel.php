@@ -9,17 +9,7 @@ class CarModel extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'car_make_id',
-        'name',
-        'name_en',
-        'slug',
-        'year_from',
-        'year_to',
-        'body_type',
-        'is_active',
-        'sort_order',
-    ];
+    protected $fillable = ['make_id', 'name', 'name_ar', 'slug', 'is_active', 'sort_order'];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -27,21 +17,16 @@ class CarModel extends Model
 
     public function make()
     {
-        return $this->belongsTo(CarMake::class, 'car_make_id');
+        return $this->belongsTo(CarMake::class, 'make_id');
     }
 
     public function years()
     {
-        return $this->hasMany(CarYear::class);
+        return $this->hasMany(CarYear::class, 'model_id');
     }
 
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    public function getFullNameAttribute()
-    {
-        return $this->make->name . ' ' . $this->name;
     }
 }

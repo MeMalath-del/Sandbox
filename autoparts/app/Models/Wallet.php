@@ -9,30 +9,7 @@ class Wallet extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'balance',
-        'pending_balance',
-        'total_earned',
-        'total_spent',
-        'total_withdrawn',
-        'currency',
-        'is_active',
-        'pin',
-    ];
-
-    protected $casts = [
-        'balance' => 'decimal:2',
-        'pending_balance' => 'decimal:2',
-        'total_earned' => 'decimal:2',
-        'total_spent' => 'decimal:2',
-        'total_withdrawn' => 'decimal:2',
-        'is_active' => 'boolean',
-    ];
-
-    protected $hidden = [
-        'pin',
-    ];
+    protected $fillable = ['user_id', 'balance'];
 
     public function user()
     {
@@ -41,54 +18,36 @@ class Wallet extends Model
 
     public function transactions()
     {
-        return $this->hasMany(WalletTransaction::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(WalletTransaction::class);
     }
 
-    public function credit($amount, $type, $description = null, $orderId = null, $relatedUserId = null)
+    public function credit($amount, $description, $reference = null)
     {
-        $balanceBefore = $this->balance;
         $this->increment('balance', $amount);
-        $this->increment('total_earned', $amount);
 
         return $this->transactions()->create([
-            'user_id' => $this->user_id,
-            'type' => $type,
+            'type' => 'credit',
             'amount' => $amount,
-            'fee' => 0,
-            'balance_before' => $balanceBefore,
-            'balance_after' => $this->balance,
-            'status' => 'completed',
-            'order_id' => $orderId,
-            'related_user_id' => $relatedUserId,
             'description' => $description,
+            'reference' => $reference,
+            'status' => 'completed',
         ]);
     }
 
-    public function debit($amount, $type, $description = null, $orderId = null)
+    public function debit($amount, $description, $reference = null)
     {
         if ($this->balance < $amount) {
-            throw new \Exception('Insufficient wallet balance');
+            throw new \Exception('رصيد غير كافي');
         }
 
-        $balanceBefore = $this->balance;
         $this->decrement('balance', $amount);
-        $this->increment('total_spent', $amount);
 
         return $this->transactions()->create([
-            'user_id' => $this->user_id,
-            'type' => $type,
-            'amount' => -$amount,
-            'fee' => 0,
-            'balance_before' => $balanceBefore,
-            'balance_after' => $this->balance,
-            'status' => 'completed',
-            'order_id' => $orderId,
+            'type' => 'debit',
+            'amount' => $amount,
             'description' => $description,
+            'reference' => $reference,
+            'status' => 'completed',
         ]);
-    }
-
-    public function hasEnoughBalance($amount)
-    {
-        return $this->balance >= $amount;
     }
 }

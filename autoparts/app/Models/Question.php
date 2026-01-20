@@ -4,24 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Question extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
-        'product_id',
-        'user_id',
-        'question',
-        'status',
-        'helpful_count',
-        'answers_count',
-        'is_pinned',
-    ];
-
-    protected $casts = [
-        'is_pinned' => 'boolean',
+        'product_id', 'user_id', 'question', 'status', 'helpful_count',
     ];
 
     public function product()
@@ -39,18 +28,13 @@ class Question extends Model
         return $this->hasMany(Answer::class);
     }
 
-    public function acceptedAnswer()
+    public function storeAnswer()
     {
-        return $this->hasOne(Answer::class)->where('is_accepted', true);
+        return $this->hasOne(Answer::class)->where('is_store_answer', true);
     }
 
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
-    }
-
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
     }
 }
