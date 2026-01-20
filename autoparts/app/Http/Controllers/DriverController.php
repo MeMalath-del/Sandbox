@@ -32,9 +32,9 @@ class DriverController extends Controller
     public function deliveries()
     {
         $driver = $this->getDriver();
-        $deliveries = $driver->deliveries()->with(['order.store', 'order.user'])->latest()->paginate(20);
+        $deliveries = $driver ? $driver->deliveries()->with(['order.store', 'order.user'])->latest()->paginate(20) : collect();
         
-        return view('driver.deliveries.index', compact('driver', 'deliveries'));
+        return view('driver.deliveries', compact('driver', 'deliveries'));
     }
 
     public function availableDeliveries()
@@ -120,20 +120,22 @@ class DriverController extends Controller
     {
         $driver = $this->getDriver();
         
-        $totalEarnings = $driver->total_earnings;
-        $thisMonthEarnings = $driver->deliveries()
-            ->whereMonth('created_at', now()->month)
+        $totalEarnings = $driver?->total_earnings ?? 0;
+        $todayEarnings = $driver ? $driver->deliveries()
+            ->whereDate('created_at', today())
             ->where('status', 'delivered')
-            ->sum('driver_earning');
-        
-        $earnings = $driver->deliveries()
+            ->sum('driver_earning') : 0;
+        $weekEarnings = $driver ? $driver->deliveries()
+            ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
             ->where('status', 'delivered')
-            ->selectRaw('DATE(created_at) as date, SUM(driver_earning) as total')
-            ->groupBy('date')
-            ->orderByDesc('date')
-            ->paginate(30);
+            ->sum('driver_earning') : 0;
         
-        return view('driver.earnings', compact('driver', 'totalEarnings', 'thisMonthEarnings', 'earnings'));
+        $earnings = $driver ? $driver->deliveries()
+            ->where('status', 'delivered')
+            ->latest()
+            ->paginate(30) : collect();
+        
+        return view('driver.earnings', compact('driver', 'totalEarnings', 'todayEarnings', 'weekEarnings', 'earnings'));
     }
 
     public function ratings()
@@ -147,9 +149,9 @@ class DriverController extends Controller
     public function settings()
     {
         $driver = $this->getDriver();
-        $vehicles = $driver->vehicles;
+        $vehicle = $driver?->vehicles?->first();
         
-        return view('driver.settings', compact('driver', 'vehicles'));
+        return view('driver.settings', compact('driver', 'vehicle'));
     }
 
     public function updateSettings(Request $request)

@@ -10,12 +10,12 @@ class WishlistController extends Controller
 {
     public function index()
     {
-        $wishlist = Wishlist::where('user_id', auth()->id())
+        $wishlistItems = Wishlist::where('user_id', auth()->id())
             ->with(['product.store', 'product.primaryImage'])
             ->latest()
             ->paginate(20);
         
-        return view('wishlist.index', compact('wishlist'));
+        return view('wishlist.index', compact('wishlistItems'));
     }
 
     public function add(Product $product)
@@ -38,13 +38,14 @@ class WishlistController extends Controller
         return back()->with('success', 'تمت إضافة المنتج إلى المفضلة');
     }
 
-    public function remove(Product $product)
+    public function remove(Wishlist $wishlist)
     {
-        Wishlist::where('user_id', auth()->id())
-            ->where('product_id', $product->id)
-            ->delete();
+        if ($wishlist->user_id !== auth()->id()) {
+            abort(403);
+        }
         
-        $product->decrement('wishlist_count');
+        $wishlist->product->decrement('wishlist_count');
+        $wishlist->delete();
         
         return back()->with('success', 'تم حذف المنتج من المفضلة');
     }

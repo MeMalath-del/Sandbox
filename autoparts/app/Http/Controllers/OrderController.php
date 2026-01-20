@@ -41,9 +41,13 @@ class OrderController extends Controller
         }
         
         $addresses = auth()->user()->addresses;
-        $defaultAddress = auth()->user()->defaultAddress;
+        $cartItems = $cart->items;
+        $subtotal = $cart->items->sum('subtotal');
+        $shipping = $subtotal >= 200 ? 0 : 25;
+        $discount = session('cart_discount', 0);
+        $total = $subtotal + $shipping - $discount;
         
-        return view('orders.checkout', compact('cart', 'addresses', 'defaultAddress'));
+        return view('checkout.index', compact('cart', 'addresses', 'cartItems', 'subtotal', 'shipping', 'discount', 'total'));
     }
 
     public function placeOrder(Request $request)

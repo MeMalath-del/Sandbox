@@ -24,9 +24,7 @@ class StoreController extends Controller
 
     public function show(Store $store)
     {
-        $store->load(['products' => function ($query) {
-            $query->active()->inStock()->with('primaryImage')->latest()->limit(12);
-        }]);
+        $products = $store->products()->active()->inStock()->with('primaryImage')->latest()->paginate(12);
         
         $categories = Category::whereHas('products', function ($query) use ($store) {
             $query->where('store_id', $store->id)->active();
@@ -34,7 +32,20 @@ class StoreController extends Controller
         
         $reviews = $store->reviews()->approved()->with('user')->latest()->limit(5)->get();
         
-        return view('stores.show', compact('store', 'categories', 'reviews'));
+        return view('stores.show', compact('store', 'products', 'categories', 'reviews'));
+    }
+
+    public function follow(Store $store)
+    {
+        $user = auth()->user();
+        
+        if ($store->followers()->where('user_id', $user->id)->exists()) {
+            $store->followers()->detach($user->id);
+            return back()->with('success', 'تم إلغاء متابعة المتجر');
+        }
+        
+        $store->followers()->attach($user->id);
+        return back()->with('success', 'تم متابعة المتجر بنجاح');
     }
 
     // Store Dashboard Methods

@@ -50,4 +50,9 @@ class CartItem extends Model
     {
         $this->update(['saved_for_later' => true]);
     }
+
+    public function getSubtotalAttribute()
+    {
+        return $this->total_price ?? ($this->quantity * $this->unit_price);
+    }
 }

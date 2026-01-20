@@ -55,20 +55,28 @@ Route::middleware('auth')->group(function () {
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/addresses', [ProfileController::class, 'addresses'])->name('profile.addresses');
+    Route::post('/profile/addresses', [ProfileController::class, 'storeAddress'])->name('profile.addresses.store');
+    Route::post('/profile/addresses/{address}/default', [ProfileController::class, 'setDefaultAddress'])->name('profile.addresses.setDefault');
+    Route::delete('/profile/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('profile.addresses.destroy');
     Route::get('/profile/cars', [ProfileController::class, 'cars'])->name('profile.cars');
-    Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');
+    Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
+    Route::put('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.settings.update');
+    Route::get('/profile/wallet', [ProfileController::class, 'wallet'])->name('profile.wallet');
+    Route::post('/profile/wallet/add-funds', [ProfileController::class, 'addFunds'])->name('profile.wallet.addFunds');
     
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::put('/cart/update/{item}', [CartController::class, 'update'])->name('cart.update');
+    Route::patch('/cart/update/{item}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{item}', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
     
     // Checkout
-    Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-    Route::post('/checkout', [OrderController::class, 'placeOrder'])->name('checkout.place');
+    Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout.index');
+    Route::post('/checkout', [OrderController::class, 'placeOrder'])->name('checkout.process');
     
     // Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -79,7 +87,7 @@ Route::middleware('auth')->group(function () {
     // Wishlist
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
-    Route::delete('/wishlist/remove/{product}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::delete('/wishlist/remove/{wishlist}', [WishlistController::class, 'remove'])->name('wishlist.remove');
     
     // Wallet
     Route::get('/wallet', [ProfileController::class, 'wallet'])->name('wallet.index');
@@ -89,7 +97,11 @@ Route::middleware('auth')->group(function () {
     
     // Messages
     Route::get('/messages', [ProfileController::class, 'messages'])->name('messages.index');
+    Route::get('/messages/create', [ProfileController::class, 'createMessage'])->name('messages.create');
     Route::get('/messages/{conversation}', [ProfileController::class, 'conversation'])->name('messages.show');
+    
+    // Store follow
+    Route::post('/stores/{store}/follow', [StoreController::class, 'follow'])->name('stores.follow');
 });
 
 /*

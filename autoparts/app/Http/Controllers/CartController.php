@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -12,9 +13,15 @@ class CartController extends Controller
     public function index()
     {
         $cart = $this->getOrCreateCart();
-        $cart->load(['items.product.store', 'items.product.primaryImage', 'savedItems.product']);
+        $cart->load(['items.product.store', 'items.product.primaryImage']);
         
-        return view('cart.index', compact('cart'));
+        $cartItems = $cart->items;
+        $subtotal = $cart->items->sum('subtotal');
+        $shipping = $subtotal >= 200 ? 0 : 25;
+        $discount = session('cart_discount', 0);
+        $total = $subtotal + $shipping - $discount;
+        
+        return view('cart.index', compact('cartItems', 'subtotal', 'shipping', 'discount', 'total'));
     }
 
     public function add(Request $request)
@@ -89,6 +96,36 @@ class CartController extends Controller
         $cart->clear();
         
         return back()->with('success', 'تم تفريغ السلة');
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string',
+        ]);
+        
+        $coupon = Coupon::where('code', $request->coupon_code)->first();
+        
+        if (!$coupon) {
+            return back()->with('error', 'كود الخصم غير صحيح');
+        }
+        
+        if (!$coupon->isValid()) {
+            return back()->with('error', 'كود الخصم منتهي الصلاحية أو تم استخدامه');
+        }
+        
+        $cart = $this->getOrCreateCart();
+        $subtotal = $cart->items->sum('subtotal');
+        
+        if ($coupon->min_order_amount && $subtotal < $coupon->min_order_amount) {
+            return back()->with('error', 'الحد الأدنى للطلب هو ' . $coupon->min_order_amount . ' ر.س');
+        }
+        
+        $discount = $coupon->calculateDiscount($subtotal);
+        
+        session(['cart_coupon' => $coupon->code, 'cart_discount' => $discount]);
+        
+        return back()->with('success', 'تم تطبيق كود الخصم');
     }
 
     protected function getOrCreateCart()

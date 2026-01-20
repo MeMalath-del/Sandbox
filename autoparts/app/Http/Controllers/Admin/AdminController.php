@@ -64,7 +64,7 @@ class AdminController extends Controller
         
         $users = $query->latest()->paginate(20);
         
-        return view('admin.users.index', compact('users'));
+        return view('admin.users', compact('users'));
     }
 
     public function showUser(User $user)
@@ -101,7 +101,7 @@ class AdminController extends Controller
         
         $stores = $query->latest()->paginate(20);
         
-        return view('admin.stores.index', compact('stores'));
+        return view('admin.stores', compact('stores'));
     }
 
     public function showStore(Store $store)
@@ -163,7 +163,7 @@ class AdminController extends Controller
         
         $products = $query->latest()->paginate(20);
         
-        return view('admin.products.index', compact('products'));
+        return view('admin.products', compact('products'));
     }
 
     public function showProduct(Product $product)
@@ -206,7 +206,7 @@ class AdminController extends Controller
         
         $orders = $query->latest()->paginate(20);
         
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.orders', compact('orders'));
     }
 
     public function showOrder(Order $order)
@@ -218,7 +218,8 @@ class AdminController extends Controller
     // Settings
     public function settings()
     {
-        return view('admin.settings');
+        $settings = [];
+        return view('admin.settings', compact('settings'));
     }
 
     public function updateSettings(Request $request)
