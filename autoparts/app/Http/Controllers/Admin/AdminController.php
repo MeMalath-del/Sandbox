@@ -244,4 +244,32 @@ class AdminController extends Controller
         
         return view('admin.reports.sales', compact('sales'));
     }
+
+    public function usersReport()
+    {
+        $stats = [
+            'total' => User::count(),
+            'this_month' => User::whereMonth('created_at', now()->month)->count(),
+            'buyers' => User::whereIn('user_type', ['buyer_individual', 'buyer_company'])->count(),
+            'sellers' => User::whereIn('user_type', ['store_individual', 'store_company'])->count(),
+        ];
+        
+        $users = User::latest()->limit(20)->get();
+        
+        return view('admin.reports.users', compact('stats', 'users'));
+    }
+
+    public function productsReport()
+    {
+        $stats = [
+            'total' => Product::count(),
+            'active' => Product::where('status', 'active')->count(),
+            'pending' => Product::where('status', 'pending')->count(),
+            'out_of_stock' => Product::where('quantity', '<=', 0)->count(),
+        ];
+        
+        $topProducts = Product::orderByDesc('sales_count')->with('store')->limit(10)->get();
+        
+        return view('admin.reports.products', compact('stats', 'topProducts'));
+    }
 }
