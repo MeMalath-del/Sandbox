@@ -419,10 +419,10 @@
             
             <div class="nav-section">
                 <div class="nav-section-title">إدارة المتجر</div>
-                <a href="{{ route('store.products') }}" class="nav-link {{ request()->routeIs('store.products*') ? 'active' : '' }}">
+                <a href="{{ route('store.products.index') }}" class="nav-link {{ request()->routeIs('store.products*') ? 'active' : '' }}">
                     <i class="bi bi-box-seam"></i> المنتجات
                 </a>
-                <a href="{{ route('store.orders') }}" class="nav-link {{ request()->routeIs('store.orders*') ? 'active' : '' }}">
+                <a href="{{ route('store.orders.index') }}" class="nav-link {{ request()->routeIs('store.orders*') ? 'active' : '' }}">
                     <i class="bi bi-receipt"></i> الطلبات
                 </a>
             </div>

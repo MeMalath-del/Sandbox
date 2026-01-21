@@ -155,6 +155,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('profile.addresses.destroy');
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
     Route::put('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.settings.update');
+    Route::get('/profile/wallet', [ProfileController::class, 'wallet'])->name('profile.wallet');
+    Route::post('/profile/wallet/add-funds', [ProfileController::class, 'addFunds'])->name('profile.wallet.addFunds');
     
     // User Cars
     Route::get('/my-cars', [UserCarController::class, 'index'])->name('cars.index');

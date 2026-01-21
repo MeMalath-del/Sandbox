@@ -15,7 +15,7 @@
         <div class="nav-section-title">المنتجات</div>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('store.products') }}">
+                <a class="nav-link" href="{{ route('store.products.index') }}">
                     <i class="bi bi-box-seam"></i> المنتجات
                 </a>
             </li>
@@ -25,7 +25,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('store.inventory') }}">
+                <a class="nav-link" href="{{ route('store.products.index') }}">
                     <i class="bi bi-boxes"></i> المخزون
                 </a>
             </li>
@@ -34,7 +34,7 @@
         <div class="nav-section-title">الطلبات</div>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('store.orders') }}">
+                <a class="nav-link" href="{{ route('store.orders.index') }}">
                     <i class="bi bi-bag"></i> الطلبات
                 </a>
             </li>
@@ -43,12 +43,12 @@
         <div class="nav-section-title">التقارير</div>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('store.reports') }}">
+                <a class="nav-link" href="{{ route('store.orders.analytics') }}">
                     <i class="bi bi-graph-up"></i> التقارير
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('store.customers') }}">
+                <a class="nav-link" href="{{ route('store.reviews') }}">
                     <i class="bi bi-people"></i> العملاء
                 </a>
             </li>
@@ -134,7 +134,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>أحدث الطلبات</span>
-                    <a href="{{ route('store.orders') }}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+                    <a href="{{ route('store.orders.index') }}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -178,7 +178,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>منتجات منخفضة المخزون</span>
-                    <a href="{{ route('store.inventory') }}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+                    <a href="{{ route('store.products.index') }}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">

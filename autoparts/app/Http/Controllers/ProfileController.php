@@ -90,8 +90,22 @@ class ProfileController extends Controller
             $user->addresses()->update(['is_default' => false]);
             $request->merge(['is_default' => true]);
         }
-        
-        $user->addresses()->create($request->all());
+
+        // Map form fields to UserAddress schema
+        $addressData = [
+            'label' => $request->label,
+            'recipient_name' => $user->name,
+            'recipient_phone' => $request->phone,
+            // 'country' uses DB default if not provided
+            'region' => $request->region,
+            'city' => $request->city,
+            'street' => $request->address_line_1,
+            'apartment_number' => $request->address_line_2,
+            'postal_code' => $request->postal_code,
+            'is_default' => (bool) $request->is_default,
+        ];
+
+        $user->addresses()->create($addressData);
         
         return back()->with('success', 'تمت إضافة العنوان بنجاح');
     }

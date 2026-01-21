@@ -113,7 +113,7 @@ class StoreController extends Controller
             'status' => 'pending',
         ]);
         
-        return redirect()->route('store.products')->with('success', 'تم إضافة المنتج بنجاح');
+        return redirect()->route('store.products.index')->with('success', 'تم إضافة المنتج بنجاح');
     }
 
     public function orders()

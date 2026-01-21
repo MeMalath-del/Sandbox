@@ -28,6 +28,17 @@ class ProductCompatibility extends Model
         return $this->belongsTo(CarModel::class, 'car_model_id');
     }
 
+    // Aliases to match eager loading and view usage (carMake, carModel)
+    public function carMake()
+    {
+        return $this->make();
+    }
+
+    public function carModel()
+    {
+        return $this->model();
+    }
+
     public function getYearRangeAttribute()
     {
         if ($this->year_from && $this->year_to) {
